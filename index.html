@@ -43,24 +43,72 @@
             <p> 목표를 설정하고 운동 일정을 수립한 후 수정이 필요한 부분을 파악할 수 있습니다. </p>
         </section>
         
-        <section id="routine">
-            <h2>맞춤 루틴 설정</h2>
-            <ul class="features-list">
-                <li class="feature-card">
-                    <h3>나의 인바디 확인</h3>
-                    <p>나의 체중과 키, 근육량 등을 확인합니다.</p>
-                </li>
+        <section id="features">
+            <h2>서비스 기능</h2>
 
-                <li class="feature-card">
-                    <h3>목표 설정</h3>
-                    <p>운동을 하는 이유와 최종 목표를 설정합니다.</p>
-                </li>
+            <div class="tabs" role="tablist" aria-label="기능 선택">
+                <button
+                    id="tab-inbody"
+                    class="tab is-active"
+                    type="button"
+                    role="tab"
+                    aria-selected="true"
+                    aria-controls="feature-inbody"
+                    data-target="feature-inbody">
+                    인바디
+                </button>
 
-                <li class="feature-card">
-                    <h3>스케줄링</h3>
-                    <p>나에게 맞는 운동 종류를 정하고 일정을 수립합니다.</p>
-                </li>
-            </ul>
+                <button
+                    id="tab-goal"
+                    class="tab"
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="feature-goal"
+                    data-target="feature-goal">
+                    목표
+                </button>
+
+                <button
+                    id="tab-plan"
+                    class="tab"
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="feature-plan"
+                    data-target="feature-plan">
+                    일정
+                </button>
+            </div>
+
+            <div
+                id="feature-inbody"
+                class="panel is-active"
+                role="tabpanel"
+                aria-labelledby="tab-inbody">
+                <h3>나의 인바디 확인</h3>
+                <p>나의 체중과 키, 근육량 등을 확인합니다.</p>
+            </div>
+
+            <div
+                id="feature-goal"
+                class="panel"
+                role="tabpanel"
+                aria-labelledby="tab-goal"
+                hidden>
+                <h3>목표 설정</h3>
+                <p>운동을 하는 이유와 최종 목표를 설정합니다.</p>
+            </div>
+
+            <div
+                id="feature-plan"
+                class="panel"
+                role="tabpanel"
+                aria-labelledby="tab-plan"
+                hidden>
+                <h3>일정 수립</h3>
+                <p>나에게 맞는 운동 종류를 정하고 일정을 수립합니다.</p>
+            </div>
         </section>
 
         <section id="steps">
@@ -72,6 +120,38 @@
                 <li>나에게 맞는 운동을 정합니다.</li>
                 <li>일정을 수립합니다.</li>
             </ol>
+        </section>
+
+        <section id="event-practice">
+            <h2> 운동 계획 수립 설정 </h2>
+
+            <div class="event-grid">
+                <article class="event-card">
+                    <h3>화면 테마</h3>
+                    <button id="themeButton" type="button">다크 테마로 바꾸기</button>
+                </article>
+
+                <article class="event-card">
+                    <h3>회원 정보</h3>
+                    <label for="nickname">회원 이름</label>
+                    <input type="text" id="nickname" maxlength="10">
+                    <p id="nicknameCount" aria-live="polite">0 / 10</p>
+                </article>
+
+                <article class="event-card">
+                    <h3>사진 활용 동의</h3>
+                    <label class="agree-row">
+                        <input type="checkbox" id="agreeCheck">
+                        체형 분석을 위한 사진 활용에 동의합니다.
+                    </label>
+                    <p id="agreeMessage" aria-live="polite">
+                        동의 후 서비스를 시작할 수 있습니다.
+                    </p>
+                    <button id="startButton" type="button" disabled>
+                        계획 수립 시작하기
+                    </button>
+                </article>
+            </div>
         </section>
 
         <section id="subscribe" class="subscribe-card">
