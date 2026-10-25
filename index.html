@@ -26,7 +26,7 @@
 
         <nav aria-label="주요 메뉴">
             <a href="#about">서비스 소개</a>
-            <a href="#routine">맞춤 루틴 설정</a>
+            <a href="#event-practice">맞춤 루틴 설정</a>
             <a href="#steps">이용 방법</a>
             <a href="#subscribe">운동 일정 알림 받기</a>
         </nav>
@@ -112,13 +112,13 @@
         </section>
 
         <section id="steps">
-            <h2> 이용 방법 </h2>
+            <h2>이용 방법</h2>
             <ol>
-                <li>회원가입 및 로그인</li>
-                <li>나의 인바디를 확인합니다.</li>
-                <li>운동을 하는 이유와 최종 목표를 설정합니다.</li>
-                <li>나에게 맞는 운동을 정합니다.</li>
-                <li>일정을 수립합니다.</li>
+                <li>개인정보 활용에 동의합니다.</li>
+                <li>키와 몸무게를 입력하고 BMI를 계산합니다.</li>
+                <li>추천받은 BARRE 테마와 다른 운동 테마를 확인합니다.</li>
+                <li>운동 목표와 운동 시간을 설정합니다.</li>
+                <li>설정한 운동 계획을 확인하고 완료합니다.</li>
             </ol>
         </section>
 
@@ -159,16 +159,89 @@
             <p id="information-description">체형 분석을 위해 개인정보를 활용할 수 있으며, 수집된 정보는 분석 목적 외에는 사용되지 않습니다.</p>
             <div class="dialog-actions">
                 <button id="information-cancel" type="button">돌아가기</button>
-                <button id="information-comfirm" type="button">동의하고 설정 시작하기</button>
+                <button id="information-confirm" type="button">동의하고 설정 시작하기</button>
             </div>
         </dialog>
 
+        
+<!-- 중간고사 신규 기능: BMI 계산 및 BARRE 추천 -->
+<section id="bmi-section" class="bmi-section" hidden aria-labelledby="bmi-title">
+    <h2 id="bmi-title">나에게 맞는 BARRE 찾기</h2>
+    <p>키와 몸무게를 입력하면 BMI를 계산하고 BARRE 운동 테마를 추천합니다.</p>
+
+    <div class="bmi-input-grid">
+        <div>
+            <label for="bmi-height">키 (cm)</label>
+            <input id="bmi-height" type="number" inputmode="decimal"
+                min="100" max="250" step="0.1"
+                placeholder="예: 165" aria-describedby="bmi-error">
+        </div>
+        <div>
+            <label for="bmi-weight">몸무게 (kg)</label>
+            <input id="bmi-weight" type="number" inputmode="decimal"
+                min="20" max="300" step="0.1"
+                placeholder="예: 55" aria-describedby="bmi-error">
+        </div>
+    </div>
+
+    <p id="bmi-error" class="error-message" role="alert" aria-live="polite"></p>
+    <button id="bmi-calculate" type="button">BMI 계산하고 추천받기</button>
+
+    <div id="bmi-result" class="bmi-result" hidden aria-live="polite">
+        <h3>나의 BMI와 추천 테마</h3>
+        <p>나의 BMI: <strong id="bmi-number"></strong></p>
+        <p>추천 테마: <strong id="bmi-recommendation"></strong></p>
+        <p id="bmi-reason"></p>
+
+        <p class="bmi-notice">
+            BMI는 참고 지표입니다. BMI만으로 운동 능력이나
+            개인에게 적합한 강도를 판단할 수 없습니다.
+        </p>
+
+        <h3>BARRE 테마 알아보기</h3>
+        <p>추천된 테마가 먼저 선택됩니다. 다른 테마도 눌러 비교해 보세요.</p>
+
+        <div class="bmi-theme-tabs" role="tablist" aria-label="BARRE 운동 테마">
+            <button type="button" class="bmi-theme-tab" role="tab"
+                data-theme="MOVE" aria-selected="false">MOVE</button>
+            <button type="button" class="bmi-theme-tab" role="tab"
+                data-theme="BALANCE" aria-selected="false">BALANCE</button>
+            <button type="button" class="bmi-theme-tab" role="tab"
+                data-theme="CORE" aria-selected="false">CORE</button>
+            <button type="button" class="bmi-theme-tab" role="tab"
+                data-theme="CARDIO" aria-selected="false">CARDIO</button>
+            <button type="button" class="bmi-theme-tab" role="tab"
+                data-theme="BURN" aria-selected="false">BURN</button>
+            <button type="button" class="bmi-theme-tab" role="tab"
+                data-theme="SLOW" aria-selected="false">SLOW</button>
+        </div>
+
+        <div id="bmi-theme-detail" class="bmi-theme-detail" aria-live="polite">
+            <h4 id="bmi-theme-name"></h4>
+            <p id="bmi-theme-intensity"></p>
+            <p id="bmi-theme-description"></p>
+        </div>
+
+        <div class="bmi-actions">
+            <button id="bmi-reset" type="button">다시 계산하기</button>
+            <button id="bmi-continue" type="button">
+                추천 확인하고 계획 설정하기
+            </button>
+        </div>
+    </div>
+</section>
+
         <section id="plan-flow" class="plan-flow" hidden>
-            <h2>계획 설정</h2>
+            <h2 id="plan-flow-title">계획 설정</h2>
+
             <p class="progress" aria-label="설정 진행 단계">
                 <span class="progress__item">1 · 목표</span>
                 <span class="progress__item">2 · 조건</span>
                 <span class="progress__item">3 · 확인</span>
+            </p>
+
+            <p id="plan-complete-status" hidden>
+                ✓ 계획 설정 완료
             </p>
 
             <section class="step" data-step="1" hidden>
@@ -181,16 +254,23 @@
 
             <section class="step" data-step="2" hidden>
                 <h3>운동 조건을 선택해 주세요.</h3>
-                <label for="duration-range">운동 시간</label>
-                <input id="duration-range" type="range" min="0" max="60" step="5" value="30">
+                <label for="duration-range">총 운동 시간 (스트레칭 포함)</label>
+                <input id="duration-range" type="range" min="5" max="60" step="5" value="30">
                 <output id="duration-value" for="duration-range">30분</output>
                 <label><input type="checkbox" id="stretching-option">스트레칭 포함</label>
+
                 <fieldset id="stretching-options" hidden>
                     <legend>스트레칭 시간</legend>
                     <label><input type="radio" name="stretching-count" value="5">5분</label>
                     <label><input type="radio" name="stretching-count" value="10" checked>10분</label>
                     <label><input type="radio" name="stretching-count" value="15">15분</label>
                 </fieldset>
+                
+                <p id="duration-guide">
+                    스트레칭을 선택하면 총 운동 시간에 포함됩니다.
+                </p>
+                <p id="duration-error" class="error-message" role="alert" aria-live="polite"></p>
+                
                 <div class="step-actions">
                     <button id="option-prev" type="button">이전</button>
                     <button id="option-next" type="button">내용 확인하기</button>
@@ -210,11 +290,53 @@
                 </div>
             </section>
             
-            <section class="step complete-step" data-step="4" hidden>
-                <h3>계획 설정이 완료되었습니다.</h3>
-                <p>설정한 내용을 확인했습니다. 필요하면 다시 설정할 수 있습니다.</p>
-                <button id="restart-button" type="button">다시 설정하기</button>
-            </section>
+
+<!-- 최종 운동 계획 요약 카드 -->
+<section class="step complete-step" data-step="4" hidden>
+    <h3>나의 BARRE 운동 계획</h3>
+    <p>나만의 운동 계획이 완성되었습니다!</p>
+
+    <div class="final-plan-card">
+        <h4>운동 계획 요약</h4>
+
+        <div class="final-plan-grid">
+            <div class="final-plan-item">
+                <span>BMI</span>
+                <strong id="final-bmi">-</strong>
+            </div>
+
+            <div class="final-plan-item">
+                <span>추천 BARRE 테마</span>
+                <strong id="final-theme">-</strong>
+            </div>
+
+            <div class="final-plan-item">
+                <span>운동 목표</span>
+                <strong id="final-goal">-</strong>
+            </div>
+
+            <div class="final-plan-item">
+                <span>운동 시간</span>
+                <strong id="final-duration">-</strong>
+            </div>
+
+            <div class="final-plan-item">
+                <span>스트레칭</span>
+                <strong id="final-stretching">-</strong>
+            </div>
+        </div>
+
+        <p class="final-plan-message">
+            추천받은 BARRE 테마를 참고해
+            나만의 운동 계획을 실천해 보세요!
+        </p>
+    </div>
+
+    <button id="restart-button" type="button">
+        다시 설정하기
+    </button>
+</section>
+
         </section>
 
         <section id="subscribe" class="subscribe-card">
