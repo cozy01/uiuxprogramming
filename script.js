@@ -136,7 +136,7 @@ const summaryDuration = document.querySelector("#summary-duration");
 const summaryStretching = document.querySelector("#summary-stretching");
 
 const formData = {
-    goal:"", duration: "30", stretching: false, stretchingCount: "2"
+    goal:"", duration: "30", stretching: false, stretchingCount: "10"
 };
 
 function showStep(index) {
@@ -178,7 +178,7 @@ informationComfirm.addEventListener("click", () => {
 function validateGoal() {
     const value = goalInput.value.trim();
     if (!value) {
-        goalError.textContent = "발표 제목을 입력해 주세요.";
+        goalError.textContent = "운동 목표를 입력해 주세요.";
         goalInput.classList.add("has-error");
         goalInput.focus();
         return false;
@@ -221,25 +221,36 @@ optionNext.addEventListener("click", () => {
     showStep(2);
 });
 
-formData.goal = goalInput.value.trim();
-
 summaryPrev.addEventListener("click", () => showStep(1));
+
 finishButton.addEventListener("click", () => showStep(3));
+
 restartButton.addEventListener("click", () => {
+    console.log("다시 설정하기 버튼 클릭됨");
+    
     formData.goal = "";
-    formData.duration = "5";
+    formData.duration = "30";
     formData.stretching = false;
-    formData.stretchingCount = "2";
+    formData.stretchingCount = "10";
+
     goalInput.value = "";
     goalError.textContent = "";
     goalInput.classList.remove("has-error");
-    durationRange.value = "1";
-    durationValue.value = "5분";
+
+    durationRange.value = "30";
+    durationValue.value = "30분";
+
     stretchingOption.checked = false;
     stretchingOptions.hidden = true;
-    document.querySelector('input[name="stretching-count"][value="2"]').checked = true;
+
+    document.querySelector(
+        'input[name="stretching-count"][value="10"]'
+    ).checked = true;
+
     summaryGoal.textContent = "";
     summaryDuration.textContent = "";
     summaryStretching.textContent = "";
+
     showStep(0);
+    goalInput.focus();
 });
