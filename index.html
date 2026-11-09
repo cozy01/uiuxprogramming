@@ -142,7 +142,7 @@
                     <h3>개인정보 활용 동의</h3>
                     <label class="agree-row">
                         <input type="checkbox" id="agreeCheck">
-                        체형 분석을 위한 개인정보 활용에 동의합니다.
+                        <span>체형 분석을 위한 개인정보 활용에 동의합니다.</span>
                     </label>
                     <p id="agreeMessage" aria-live="polite">
                         동의 후 서비스를 시작할 수 있습니다.
@@ -154,7 +154,7 @@
             </div>
         </section>
 
-        <dialog id = "information-dialog" aria-labelledby="information-title" aria-describedby="information-description">
+        <dialog id="information-dialog" aria-labelledby="information-title" aria-describedby="information-description">
             <h2 id="information-title">개인정보 활용 안내</h2>
             <p id="information-description">체형 분석을 위해 개인정보를 활용할 수 있으며, 수집된 정보는 분석 목적 외에는 사용되지 않습니다.</p>
             <div class="dialog-actions">
@@ -246,9 +246,27 @@
 
             <section class="step" data-step="1" hidden>
                 <h3>운동 목표를 입력해주세요.</h3>
-                <label for="sport-goal">운동 목표</label>
-                <input id="sport-goal" type="text" placeholder="예: 체중 감량" aria-describedby="goal-error">
-                <p id="goal-error" class="error-message" aria-live="polite"></p>
+                <label for="sport-goal"> 운동 목표 <span class="required">필수</span></label>
+                
+                <input
+                    id="sport-goal"
+                    name="goal"
+                    type="text"
+                    maxlength="30"
+                    placeholder="예: 체중 감량"
+                    aria-describedby="goal-help goal-count goal-error">
+                
+                <div class="goal-info">
+                    <p id="goal-help">운동 목표를 2자 이상 입력해 주세요.</p>
+                    <p id="goal-count" aria-live="polite">0 / 30자</p>
+                </div>
+                
+                <p
+                    id="goal-error"
+                    class="error-message"
+                    role="alert"
+                    aria-live="polite">
+                </p>
                 <button id="goal-next" type="button">운동 조건 선택하기</button>
             </section>
 
@@ -261,14 +279,37 @@
 
                 <fieldset id="stretching-options" hidden>
                     <legend>스트레칭 시간</legend>
-                    <label><input type="radio" name="stretching-count" value="5">5분</label>
-                    <label><input type="radio" name="stretching-count" value="10" checked>10분</label>
-                    <label><input type="radio" name="stretching-count" value="15">15분</label>
+                
+                    <label>
+                        <input
+                            type="radio"
+                            name="stretching-count"
+                            value="5"
+                            disabled>
+                        5분
+                    </label>
+                
+                    <label>
+                        <input
+                            type="radio"
+                            name="stretching-count"
+                            value="10"
+                            checked
+                            disabled>
+                        10분
+                    </label>
+                
+                    <label>
+                        <input
+                            type="radio"
+                            name="stretching-count"
+                            value="15"
+                            disabled>
+                        15분
+                    </label>
                 </fieldset>
                 
-                <p id="duration-guide">
-                    스트레칭을 선택하면 총 운동 시간에 포함됩니다.
-                </p>
+                <p id="duration-guide">스트레칭을 선택하면 총 운동 시간에 포함됩니다.</p>
                 <p id="duration-error" class="error-message" role="alert" aria-live="polite"></p>
                 
                 <div class="step-actions">
@@ -284,9 +325,10 @@
                     <div><span>운동 시간</span><strong id="summary-duration"></strong></div>
                     <div><span>스트레칭</span><strong id="summary-stretching"></strong></div>
                 </div>
+                <p id="submit-status" aria-live="polite"></p>
                 <div class="step-actions">
                     <button id="summary-prev" type="button">수정하기</button>
-                    <button id="finish-button" type="button">설정 완료하기</button>
+                    <button id="finish-button" type="button">운동 계획 저장하기</button>
                 </div>
             </section>
             

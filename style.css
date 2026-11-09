@@ -219,6 +219,11 @@ button:active {
     margin-top: 6px;
 }
 
+.agree-row span {
+    flex: 1;
+    word-break: keep-all;
+}
+
 #startButton:disabled {
     color: #ffffff;
     background-color: #a8a8b2;
@@ -297,7 +302,7 @@ body.dark .tab {
     border-color: #50515f;
 }
 
-body.dark .tab.tab.is-active {
+body.dark .tab.is-active {
     color: #b9b5ff;
     border-color: #b8b5ff;
 }
@@ -621,6 +626,54 @@ body.dark .bmi-section .error-message {
     color: #ffb3c4;
 }
 
+.required {
+    color: #9d243d;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.goal-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.goal-info p {
+    margin: 6px 0 0;
+    font-size: 14px;
+}
+
+#goal-count {
+    flex: none;
+}
+
+#goal-help {
+    color: #555763;
+}
+
+#sport-goal.is-valid {
+    border-color: #245c3a;
+    background-color: #f4fbf7;
+}
+
+#goal-help.is-valid {
+    color: #245c3a;
+    font-weight: 700;
+}
+
+#submit-status {
+    min-height: 24px;
+    margin-top: 12px;
+    font-weight: 700;
+}
+
+#submit-status.is-success {
+    color: #245c3a;
+}
+
+#submit-status.is-error {
+    color: #9d243d;
+}
 
 /* =========================================
    최종 BARRE 운동 계획 요약 카드
@@ -771,7 +824,7 @@ body.dark .final-plan-message {
         align-items: stretch;
     }
 
-    input,
+    input:not([type="checkbox"]):not([type="radio"]),
     button {
         width: 100%;
     }
@@ -834,5 +887,10 @@ body.dark .final-plan-message {
 
     .final-plan-item strong {
         font-size: 20px;
+    }
+
+    .goal-info {
+        flex-direction: column;
+        gap: 4px;
     }
 }

@@ -3,10 +3,7 @@ let isSubscribed = false;
 let submitCount = 0;
 
 function makeSubscribeMessage(email, subscribed) {
-    if (subscribed == true) {
-        return email + "로 신청이 완료되었습니다.";
-    }
-
+    if (subscribed) {return email + "로 신청이 완료되었습니다.";}
     return "이메일을 입력한 뒤 신청해주세요.";
 }
 
@@ -124,6 +121,9 @@ const flowSteps = planFlow.querySelectorAll(".step");
 const progressItems = planFlow.querySelectorAll(".progress__item");
 const goalInput = document.querySelector("#sport-goal");
 const goalError = document.querySelector("#goal-error");
+const goalHelp = document.querySelector("#goal-help");
+const goalCount = document.querySelector("#goal-count");
+const submitStatus = document.querySelector("#submit-status");
 const goalNext = document.querySelector("#goal-next");
 const durationRange = document.querySelector("#duration-range");
 const durationError = document.querySelector("#duration-error");
@@ -220,19 +220,69 @@ informationConfirm.addEventListener("click", () => {
     bmiHeight.focus();
 });
 
+function updateGoalExperience() {
+
+    const length = goalInput.value.length;
+
+    const enough =
+        goalInput.value.trim().length >= 2;
+
+    goalCount.textContent =
+        length + " / 30자";
+
+    goalInput.classList.toggle(
+        "is-valid",
+        enough
+    );
+
+    goalHelp.classList.toggle(
+        "is-valid",
+        enough
+    );
+
+    goalHelp.textContent = enough
+        ? "입력 조건을 충족했습니다."
+        : "운동 목표를 2자 이상 입력해 주세요.";
+}
+
 function validateGoal() {
-    const value = goalInput.value.trim();
-    if (!value) {
-        goalError.textContent = "운동 목표를 입력해 주세요.";
-        goalInput.classList.add("has-error");
-        goalInput.focus();
-        return false;
-    }
+
+    const value =
+        goalInput.value.trim();
+        if (!value) {
+            goalError.textContent =
+                "운동 목표를 입력해 주세요.";
+            goalInput.classList.add("has-error");
+            goalInput.classList.remove("is-valid");
+            goalHelp.classList.remove("is-valid");
+            goalInput.focus();
+            return false;
+        }
+        
+
+        if (value.length < 2) {
+            goalError.textContent =
+                "운동 목표를 2자 이상 입력해 주세요.";
+            goalInput.classList.add("has-error");
+            goalInput.classList.remove("is-valid");
+            goalHelp.classList.remove("is-valid");
+            goalInput.focus();
+            return false;
+        }
+
     goalError.textContent = "";
     goalInput.classList.remove("has-error");
     formData.goal = value;
+    updateGoalExperience();
     return true;
 }
+
+goalInput.addEventListener("input", () => {
+    updateGoalExperience();
+    if (goalInput.classList.contains("has-error")) {
+        validateGoal();
+    }
+});
 
 goalNext.addEventListener("click", () => {
     if (!validateGoal()) return;
@@ -240,11 +290,28 @@ goalNext.addEventListener("click", () => {
 });
 
 durationRange.addEventListener("input", () => {
-    durationValue.value = durationRange.value + "분";
-});
-stretchingOption.addEventListener("change", () => {
-    stretchingOptions.hidden = !stretchingOption.checked;
-});
+    durationValue.value = durationRange.value + "분";});
+const stretchingCountInputs =
+    document.querySelectorAll('input[name="stretching-count"]');
+
+function syncStretchingOptions() {
+    const open = stretchingOption.checked;
+    stretchingOptions.hidden = !open;
+    stretchingCountInputs.forEach((input) => {input.disabled = !open;});
+}
+
+stretchingOption.addEventListener("change",syncStretchingOptions);
+
+syncStretchingOptions();
+
+function setSubmitStatus(message, status) {
+    submitStatus.textContent = message;
+    submitStatus.classList.remove(
+        "is-success",
+        "is-error"
+    );
+    if (status) {submitStatus.classList.add(status);}
+}
 
 optionPrev.addEventListener("click", () => showStep(0));
 
@@ -287,29 +354,36 @@ optionNext.addEventListener("click", () => {
 summaryPrev.addEventListener("click", () => showStep(1));
 
 
-finishButton.addEventListener("click", () => {
-    // BMI 계산 결과 가져오기
-    finalBmi.textContent = bmiNumber.textContent || "-";
+const forceSaveFailure =
+    new URLSearchParams(location.search).has("save-error");
 
-    // BMI로 추천받은 테마 가져오기
-    finalTheme.textContent =
-        bmiRecommendation.textContent || "-";
+finishButton.addEventListener("click",
+    async () => {finishButton.disabled = true;
+        setSubmitStatus("운동 계획을 저장하고 있습니다.", "");
 
-    // 기존 운동 계획 입력 내용 가져오기
-    finalGoal.textContent = formData.goal;
-    finalDuration.textContent = formData.duration + "분";
+        await new Promise((resolve) => setTimeout(resolve, 800));
 
-    finalStretching.textContent = formData.stretching
-        ? formData.stretchingCount + "분 포함"
-        : "미포함";
+        if (forceSaveFailure) {finishButton.disabled = false;
+            setSubmitStatus(
+                "운동 계획 저장에 실패했습니다. 다시 시도해 주세요.",
+                "is-error"
+            );
+            return;
+        }
 
-    // 최종 요약 카드 화면으로 이동
-    showStep(3);
-});
+        finalBmi.textContent = bmiNumber.textContent || "-";
+        finalTheme.textContent = bmiRecommendation.textContent || "-";
+        finalGoal.textContent = formData.goal;
+        finalDuration.textContent = formData.duration + "분";
+        finalStretching.textContent = formData.stretching ? formData.stretchingCount + "분 포함" : "미포함";
+
+        setSubmitStatus("운동 계획을 저장했습니다.", "is-success");
+
+        showStep(3);
+    }
+);
 
 restartButton.addEventListener("click", () => {
-    console.log("다시 설정하기 버튼 클릭됨");
-    
     formData.goal = "";
     formData.duration = "30";
     formData.stretching = false;
@@ -323,9 +397,16 @@ restartButton.addEventListener("click", () => {
     durationValue.value = "30분";
 
     stretchingOption.checked = false;
-    stretchingOptions.hidden = true;
+    syncStretchingOptions();    
 
     durationError.textContent = "";
+
+    goalCount.textContent = "0 / 30자";
+    goalHelp.textContent = "운동 목표를 2자 이상 입력해 주세요.";
+    goalHelp.classList.remove("is-valid");
+    goalInput.classList.remove("is-valid");
+
+    setSubmitStatus("", "");
 
     document.querySelector(
         'input[name="stretching-count"][value="10"]'
@@ -589,3 +670,5 @@ bmiContinue.addEventListener("click", () => {
     planFlow.scrollIntoView({ behavior: "smooth" });
     goalInput.focus();
 });
+
+updateGoalExperience();
