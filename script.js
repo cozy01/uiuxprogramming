@@ -43,12 +43,24 @@ const nicknameInput = document.querySelector("#nickname");
 const nicknameCount = document.querySelector("#nicknameCount");
 const agreeCheck = document.querySelector("#agreeCheck");
 const agreeMessage = document.querySelector("#agreeMessage");
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme === "dark") {
+    document.body.classList.add("dark");
+    themeButton.textContent =
+        "라이트 테마로 바꾸기";
+}
 const startButton = document.querySelector("#startButton");
 
 function handleThemeClick() {
     const isDark = document.body.classList.toggle("dark");
+    localStorage.setItem(
+        "theme",
+        isDark ? "dark" : "light"
+    );
 
-    themeButton.textContent = isDark ? "라이트 테마로 바꾸기" : "다크 테마로 바꾸기";
+    themeButton.textContent = isDark
+        ? "라이트 테마로 바꾸기"
+        : "다크 테마로 바꾸기";
 }
 
 themeButton.addEventListener("click", handleThemeClick);
@@ -125,6 +137,15 @@ const goalHelp = document.querySelector("#goal-help");
 const goalCount = document.querySelector("#goal-count");
 const submitStatus = document.querySelector("#submit-status");
 const goalNext = document.querySelector("#goal-next");
+const dayPrev = document.querySelector("#day-prev");
+const dayNext = document.querySelector("#day-next");
+const dayError = document.querySelector("#day-error");
+const conditionPrev = document.querySelector("#condition-prev");
+const conditionNext = document.querySelector("#condition-next");
+const conditionRange = document.querySelector("#condition-range");
+const conditionValue = document.querySelector("#condition-value");
+const recommendedTheme = document.querySelector("#recommended-theme");
+const conditionError = document.querySelector("#condition-error");
 const durationRange = document.querySelector("#duration-range");
 const durationError = document.querySelector("#duration-error");
 const durationValue = document.querySelector("#duration-value");
@@ -138,17 +159,65 @@ const restartButton = document.querySelector("#restart-button");
 const summaryGoal = document.querySelector("#summary-goal");
 const summaryDuration = document.querySelector("#summary-duration");
 const summaryStretching = document.querySelector("#summary-stretching");
+const summaryDay = document.querySelector("#summary-day");
+const summaryCondition = document.querySelector("#summary-condition");
+const summaryTheme = document.querySelector("#summary-theme");
+const finalDay = document.querySelector("#final-day");
+const finalCondition = document.querySelector("#final-condition");
+const bmiRank1 = document.querySelector("#bmi-rank-1");
+const bmiRank2 = document.querySelector("#bmi-rank-2");
+const bmiRank3 = document.querySelector("#bmi-rank-3");
 // 최종 운동 계획 요약 카드 요소
 const finalBmi = document.querySelector("#final-bmi");
 const finalTheme = document.querySelector("#final-theme");
 const finalGoal = document.querySelector("#final-goal");
 const finalDuration = document.querySelector("#final-duration");
 const finalStretching = document.querySelector("#final-stretching");
+const planList = document.querySelector("#plan-list");
+const planCount = document.querySelector("#plan-count");
+const planEmpty = document.querySelector("#plan-empty");
+
+const savedPlans = [];
 
 const formData = {
-    goal:"", duration: "30", stretching: false, stretchingCount: "10"
+    goal:"",
+    day:"",
+    condition:"",
+    theme:"",
+    duration:"30",
+    stretching:false,
+    stretchingCount:"10"
 };
 
+function renderPlans() {
+
+    planList.innerHTML = "";
+
+    savedPlans.forEach((plan) => {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "final-plan-item";
+
+        item.innerHTML = `
+            <strong>${plan.goal}</strong>
+            <p>요일: ${plan.day}</p>
+            <p>테마: ${plan.theme}</p>
+            <p>운동 시간: ${plan.duration}분</p>
+        `;
+
+        planList.append(item);
+
+    });
+
+    planCount.textContent =
+        `저장된 계획 ${savedPlans.length}개`;
+
+    planEmpty.hidden =
+        savedPlans.length > 0;
+}
 
 function showStep(index) {
     // 해당 단계만 표시
@@ -162,7 +231,7 @@ function showStep(index) {
     });
 
     // 마지막 단계인지 확인
-    const isComplete = index === 3;
+    const isComplete = index === 5;
 
     // 완료 시 제목 변경
     planFlowTitle.textContent = isComplete
@@ -289,6 +358,55 @@ goalNext.addEventListener("click", () => {
     showStep(1);
 });
 
+dayPrev.addEventListener("click", () => {
+    showStep(0);
+});
+
+dayNext.addEventListener("click", () => {
+    const selectedDay = document.querySelector('input[name="exercise-day"]:checked');
+    if (!selectedDay) {dayError.textContent = "운동 요일을 선택해 주세요.";
+        return;
+    }
+    dayError.textContent = "";
+    formData.day = selectedDay.value;
+    showStep(2);
+});
+
+conditionRange.addEventListener("input", () => {
+    const score = Number(conditionRange.value);
+    conditionValue.textContent = score + "점";
+    if (score <= 3) {
+        recommendedTheme.textContent = "SLOW";
+    }
+    else if (score <= 6) {
+        recommendedTheme.textContent = "MOVE";
+    }
+    else if (score <= 8) {
+        recommendedTheme.textContent = "CORE";
+    }
+    else {
+        recommendedTheme.textContent = "BURN";
+    }
+});
+
+conditionPrev.addEventListener("click", () => {
+    showStep(1);
+});
+
+conditionNext.addEventListener("click", () => {
+    const selectedTheme = document.querySelector(
+            'input[name="selected-theme"]:checked'
+        );
+    if (!selectedTheme) {
+        conditionError.textContent = "운동 테마를 선택해 주세요.";
+        return;
+    }
+    conditionError.textContent = "";
+    formData.condition = conditionRange.value;
+    formData.theme = selectedTheme.value;
+    showStep(3);
+});
+
 durationRange.addEventListener("input", () => {
     durationValue.value = durationRange.value + "분";});
 const stretchingCountInputs =
@@ -313,17 +431,15 @@ function setSubmitStatus(message, status) {
     if (status) {submitStatus.classList.add(status);}
 }
 
-optionPrev.addEventListener("click", () => showStep(0));
+optionPrev.addEventListener("click", () => showStep(2));
 
 optionNext.addEventListener("click", () => {
     const duration = Number(durationRange.value);
     const stretching = stretchingOption.checked;
-
-    const selectedCount = document.querySelector(
-        'input[name="stretching-count"]:checked'
-    );
-
-    const stretchingCount = Number(selectedCount.value);
+    const selectedCount = document.querySelector('input[name="stretching-count"]:checked');
+    const stretchingCount = selectedCount
+        ? Number(selectedCount.value)
+        : 10;
 
     // 이전 오류 메시지 초기화
     durationError.textContent = "";
@@ -343,15 +459,17 @@ optionNext.addEventListener("click", () => {
     // 확인 단계 내용 표시
     summaryGoal.textContent = formData.goal;
     summaryDuration.textContent = duration + "분";
-
     summaryStretching.textContent = stretching
         ? stretchingCount + "분 포함"
         : "미포함";
+    summaryDay.textContent = formData.day;
+    summaryCondition.textContent = formData.condition + "점";
+    summaryTheme.textContent = formData.theme;
 
-    showStep(2);
+    showStep(4);
 });
 
-summaryPrev.addEventListener("click", () => showStep(1));
+summaryPrev.addEventListener("click", () => showStep(3));
 
 
 const forceSaveFailure =
@@ -376,11 +494,20 @@ finishButton.addEventListener("click",
         finalGoal.textContent = formData.goal;
         finalDuration.textContent = formData.duration + "분";
         finalStretching.textContent = formData.stretching ? formData.stretchingCount + "분 포함" : "미포함";
+        finalDay.textContent = formData.day;
+        finalCondition.textContent = formData.condition + "점";
 
-        setSubmitStatus("운동 계획을 저장했습니다.", "is-success");
-
-        showStep(3);
+        savedPlans.push({
+            goal: formData.goal,
+            day: formData.day,
+            condition: formData.condition,
+            theme: formData.theme,
+            duration: formData.duration
+        });
+        
+        renderPlans();
     }
+
 );
 
 restartButton.addEventListener("click", () => {
@@ -388,6 +515,14 @@ restartButton.addEventListener("click", () => {
     formData.duration = "30";
     formData.stretching = false;
     formData.stretchingCount = "10";
+    formData.day = "";
+    formData.condition = "";
+    formData.theme = "";
+
+    conditionValue.textContent = "5점";
+    recommendedTheme.textContent = "-";
+    conditionError.textContent = "";
+    dayError.textContent = "";
 
     goalInput.value = "";
     goalError.textContent = "";
@@ -415,6 +550,9 @@ restartButton.addEventListener("click", () => {
     summaryGoal.textContent = "";
     summaryDuration.textContent = "";
     summaryStretching.textContent = "";
+    summaryDay.textContent = "";
+    summaryCondition.textContent = "";
+    summaryTheme.textContent = "";
     
     // 최종 요약 카드 초기화
     finalBmi.textContent = "-";
@@ -422,6 +560,8 @@ restartButton.addEventListener("click", () => {
     finalGoal.textContent = "-";
     finalDuration.textContent = "-";
     finalStretching.textContent = "-";
+    finalDay.textContent = "-";
+    finalCondition.textContent = "-";
 
     showStep(0);
     goalInput.focus();
@@ -619,6 +759,35 @@ bmiCalculate.addEventListener("click", () => {
     const bmi = values.weight / (heightInMeters * heightInMeters);
 
     const recommendation = recommendBarreTheme(bmi);
+
+    if (recommendation.theme === "CORE") {
+
+        bmiRank1.textContent = "CORE";
+        bmiRank2.textContent = "MOVE";
+        bmiRank3.textContent = "BALANCE";
+    
+    }
+    else if (recommendation.theme === "MOVE") {
+    
+        bmiRank1.textContent = "MOVE";
+        bmiRank2.textContent = "CORE";
+        bmiRank3.textContent = "CARDIO";
+    
+    }
+    else if (recommendation.theme === "BALANCE") {
+    
+        bmiRank1.textContent = "BALANCE";
+        bmiRank2.textContent = "SLOW";
+        bmiRank3.textContent = "MOVE";
+    
+    }
+    else {
+    
+        bmiRank1.textContent = recommendation.theme;
+        bmiRank2.textContent = "-";
+        bmiRank3.textContent = "-";
+    
+    }
 
     bmiNumber.textContent = bmi.toFixed(1);
     bmiRecommendation.textContent = recommendation.theme;
