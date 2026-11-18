@@ -351,6 +351,145 @@ body.dark #information-dialog {background: #50515f; color: #fff;}
     outline-offset: 2px;
 }
 
+#plan-detail-dialog {
+    width: min(700px, calc(100% - 32px));
+    border: none;
+    border-radius: 20px;
+    padding: 28px;
+}
+
+#plan-detail-dialog::backdrop {
+    background: rgba(0,0,0,.45);
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+}
+
+.detail-item {
+    padding: 18px;
+    border-radius: 14px;
+    background: #f4f3ff;
+    border: 1px solid #deddea;
+}
+
+.detail-item span {
+    display: block;
+    margin-bottom: 8px;
+    color: #666879;
+    font-size: 14px;
+}
+
+.detail-item strong {
+    font-size: 18px;
+    color: var(--primary);
+}
+
+.plan-list .final-plan-item {
+    padding: 16px;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid #deddea;
+    overflow: hidden;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.plan-list .final-plan-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(90,61,140,.12);
+}
+
+.plan-status {
+    display: inline-block;
+    width: auto;
+    padding: 6px 12px;
+    margin-bottom: 18px;
+    border-radius: 999px;
+    background: #ECE5F8;
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.plan-card-header h3 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #27232c;
+}
+
+.plan-card-meta {
+    margin-bottom: 12px;
+    color: #5d6072;
+    font-size: 18px;
+}
+
+.plan-card-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.plan-card-info {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 10px;
+    color: #666879;
+}
+
+.plan-theme-badge {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #ECE5F8;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.theme-core {
+    background: #ECE5F8;
+    color: #5A3D8C;
+}
+
+.theme-burn {
+    background: #FFE0EA;
+    color: #C43D6B;
+}
+
+.theme-balance {
+    background: #E2F0FF;
+    color: #3E7ACB;
+}
+
+.theme-move {
+    background: #E5F9F1;
+    color: #2F8F6A;
+}
+
+.theme-cardio {
+    background: #FFF3DD;
+    color: #D08700;
+}
+
+.theme-slow {
+    background: #E9ECEF;
+    color: #5C6770;
+}
+
+.detail-button {
+    width: auto;
+    margin-top: 0;
+    border-radius: 14px;
+    padding: 10px 20px;
+    min-height: 44px;
+}
+
 .plan-flow {
     padding: 24px;
     border: 1px solid #deddea;
@@ -536,6 +675,38 @@ body.dark #goal-count {
 
 body.dark .required {
     color: #FFB3C4;
+}
+
+body.dark .detail-item {
+    background: #2d2e38;
+    border-color: #50515f;
+}
+
+body.dark .detail-item span {
+    color: #d8d8e2;
+}
+
+body.dark .detail-item strong {
+    color: #c9c5ff;
+}
+
+body.dark .plan-list .final-plan-item {
+    background: #2d2e38;
+    border-color: #50515f;
+}
+
+body.dark .plan-card-header h3 {
+    color: #ffffff;
+}
+
+body.dark .plan-card-meta {
+    color: #d8d8e2;
+}
+
+body.dark .plan-status,
+body.dark .plan-theme-badge {
+    background: #3B3C49;
+    color: #C9C5FF;
 }
 
 /* ========================= 신규 기능: BMI 및 BARRE 테마 추천 ====================== */
@@ -871,11 +1042,106 @@ body.dark .bmi-section .error-message {
 }
 
 .logo-image {
-    width: 200px;
+    width: 140px;
     max-width: 100%;
     height: auto;
     display: block;
 }
+
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background:
+        linear-gradient(
+            180deg,
+            #F3EEF9,
+            #FFFFFF
+        );
+    border-right: 1px solid #E8E0F5;
+    padding: 24px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.content-area {
+    flex: 1;
+    min-width: 0;
+    padding: 40px;
+}
+
+.logo-link {
+    display: block;
+    margin-bottom: 24px;
+}
+
+.menu-toggle {
+    display: none;
+    border: 0;
+    background: transparent;
+    color: var(--primary);
+    font-size: 28px;
+    padding: 0;
+    margin-bottom: 12px;
+}
+
+.main-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.main-nav li {
+    margin-bottom: 8px;
+}
+
+.main-nav a {
+    display: block;
+    padding: 14px 18px;
+    border-radius: 12px;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color .2s ease,
+                color .2s ease;
+}
+
+.main-nav a:hover {
+    background: #ECE5F8;
+    color: var(--primary);
+}
+
+.main-nav a.is-current {
+    background: #ECE5F8;
+    border-left: 4px solid var(--primary);
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.plan-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+}
+
+.detail-button {
+    margin-top: 16px;
+    width: 100%;
+}
+
+/* main section {
+    background: white;
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 10px 30px rgba(90,61,140,.08);
+} */
 
 /* BMI 결과를 간단한 요약 화면으로 표시 */
 .bmi-section.is-compact > p,
@@ -924,6 +1190,10 @@ body.dark .bmi-section .error-message {
 
     /*가로 메뉴를 위에서 아래로 배치*/
     .main-nav {
+        display: none;
+    }
+    
+    .main-nav.is-open {
         display: flex;
         flex-direction: column;
     }
@@ -1021,98 +1291,46 @@ body.dark .bmi-section .error-message {
         width: 100%;
         height: auto;
         position: static;
+        padding: 16px;
     }
 
     .menu-toggle {
         display: block;
+        width: auto;
+        min-height: auto;
+    }
+
+    .plan-list {
+        grid-template-columns: 1fr;
+    }
+
+    body.dark .theme-core {
+        background: #423156;
+        color: #D8C7F5;
+    }
+    
+    body.dark .theme-burn {
+        background: #5A3040;
+        color: #FFB8CC;
+    }
+    
+    body.dark .theme-balance {
+        background: #29465F;
+        color: #B9DBFF;
+    }
+    
+    body.dark .theme-move {
+        background: #22483D;
+        color: #B9F7DB;
+    }
+    
+    body.dark .theme-cardio {
+        background: #5A4625;
+        color: #FFD58E;
+    }
+    
+    body.dark .theme-slow {
+        background: #3B3C49;
+        color: #D8D8E2;
     }
 }
-
-.app-layout {
-    display: flex;
-    min-height: 100vh;
-}
-
-.sidebar {
-    width: 240px;
-    flex-shrink: 0;
-    background:
-        linear-gradient(
-            180deg,
-            #F3EEF9,
-            #FFFFFF
-        );
-    border-right: 1px solid #E8E0F5;
-    padding: 24px;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow-y: auto;
-}
-
-.content-area {
-    flex: 1;
-    min-width: 0;
-    padding: 40px;
-}
-
-.logo-link {
-    display: block;
-    margin-bottom: 24px;
-}
-
-.menu-toggle {
-    display: none;
-    border: 0;
-    background: transparent;
-    color: var(--primary);
-    font-size: 28px;
-    padding: 0;
-    margin-bottom: 12px;
-}
-
-.main-nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.main-nav li {
-    margin-bottom: 8px;
-}
-
-.main-nav a {
-    display: block;
-    padding: 14px 18px;
-    border-radius: 12px;
-    color: var(--text);
-    text-decoration: none;
-    font-weight: 600;
-    transition: background-color .2s ease,
-                color .2s ease;
-}
-
-.main-nav a:hover {
-    background: #ECE5F8;
-    color: var(--primary);
-}
-
-.main-nav a.is-current {
-    background: #ECE5F8;
-    border-left: 4px solid var(--primary);
-    color: var(--primary);
-    font-weight: 700;
-}
-
-.plan-list {
-    display: grid;
-    gap: 16px;
-    margin-top: 20px;
-}
-
-/* main section {
-    background: white;
-    border-radius: 24px;
-    padding: 32px;
-    box-shadow: 0 10px 30px rgba(90,61,140,.08);
-} */

@@ -7,6 +7,33 @@ function makeSubscribeMessage(email, subscribed) {
     return "이메일을 입력한 뒤 신청해주세요.";
 }
 
+const menuToggle = document.querySelector("#menu-toggle");
+const mainNav = document.querySelector("#main-nav");
+
+menuToggle.addEventListener("click", () => {
+    const isOpen = mainNav.classList.toggle("is-open");
+    menuToggle.setAttribute("aria-expanded", String(isOpen));
+    menuToggle.textContent =
+        isOpen
+            ? "✕"
+            : "☰";
+});
+
+const navLinks = document.querySelectorAll(".main-nav a");
+
+navLinks.forEach((link) => {
+    link.addEventListener("click", () => {
+        if (window.innerWidth <= 768) {
+            mainNav.classList.remove("is-open");
+            menuToggle.textContent = "☰";
+            menuToggle.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+        }
+    });
+});
+
 const subscribeForm = document.querySelector("#subscribe-form");
 const emailInput = document.querySelector("#email");
 const subscribeButton = document.querySelector("#subscribeButton");
@@ -176,6 +203,9 @@ const finalStretching = document.querySelector("#final-stretching");
 const planList = document.querySelector("#plan-list");
 const planCount = document.querySelector("#plan-count");
 const planEmpty = document.querySelector("#plan-empty");
+const planDetailDialog = document.querySelector("#plan-detail-dialog");
+const planDetailContent = document.querySelector("#plan-detail-content");
+const planDetailClose = document.querySelector("#plan-detail-close");
 
 const savedPlans = [];
 
@@ -201,12 +231,97 @@ function renderPlans() {
         item.className =
             "final-plan-item";
 
-        item.innerHTML = `
-            <strong>${plan.goal}</strong>
-            <p>요일: ${plan.day}</p>
-            <p>테마: ${plan.theme}</p>
-            <p>운동 시간: ${plan.duration}분</p>
+            item.innerHTML = `
+
+            <span class="plan-status">저장됨</span>
+        
+            <div class="plan-card-header">
+                <h3>${plan.goal}</h3>
+            </div>
+        
+            <div class="plan-card-info">
+            <span>📅 ${plan.day}</span>
+            <span>⏱ ${plan.duration}분</span>
+            </div>
+            
+            <div class="plan-card-footer">
+                <span class="plan-theme-badge theme-${plan.theme.toLowerCase()}">
+                ${plan.theme}
+                </span>
+                
+                <button
+                    type="button"
+                    class="detail-button">
+                    상세보기
+                </button>
+            
+            </div>
+        
         `;
+
+        const detailButton = item.querySelector(".detail-button");
+
+        detailButton.addEventListener(
+            "click",
+            () => {
+
+                planDetailContent.innerHTML = `
+
+                <div class="detail-grid">
+            
+                    <div class="detail-item">
+                        <span>BMI</span>
+                        <strong>${plan.bmi}</strong>
+                    </div>
+            
+                    <div class="detail-item">
+                        <span>추천 BARRE 테마</span>
+                        <strong>${plan.recommendedTheme}</strong>
+                    </div>
+            
+                    <div class="detail-item">
+                        <span>운동 목표</span>
+                        <strong>${plan.goal}</strong>
+                    </div>
+            
+                    <div class="detail-item">
+                        <span>운동 요일</span>
+                        <strong>${plan.day}</strong>
+                    </div>
+            
+                    <div class="detail-item">
+                        <span>컨디션 점수</span>
+                        <strong>${plan.condition}점</strong>
+                    </div>
+            
+                    <div class="detail-item">
+                        <span>선택 BARRE 테마</span>
+                        <strong>${plan.theme}</strong>
+                    </div>
+            
+                    <div class="detail-item">
+                        <span>운동 시간</span>
+                        <strong>${plan.duration}분</strong>
+                    </div>
+            
+                    <div class="detail-item">
+                        <span>스트레칭</span>
+                        <strong>
+                            ${
+                                plan.stretching
+                                ? plan.stretchingCount + "분 포함"
+                                : "미포함"
+                            }
+                        </strong>
+                    </div>
+            
+                </div>
+            
+            `;
+
+                planDetailDialog.showModal();
+            }
+        );
 
         planList.append(item);
 
@@ -498,19 +613,35 @@ finishButton.addEventListener("click",
         finalCondition.textContent = formData.condition + "점";
 
         savedPlans.push({
+            bmi: bmiNumber.textContent,
+            recommendedTheme: bmiRecommendation.textContent,
             goal: formData.goal,
             day: formData.day,
             condition: formData.condition,
             theme: formData.theme,
-            duration: formData.duration
+            duration: formData.duration,
+            stretching: formData.stretching,
+            stretchingCount: formData.stretchingCount
         });
+
+        console.log("현재 저장 개수:", savedPlans.length);
+        console.log(savedPlans);
         
         renderPlans();
+
+        setSubmitStatus(
+            "운동 계획을 저장했습니다.",
+            "is-success"
+        );
+        
+        showStep(5);
     }
 
 );
 
 restartButton.addEventListener("click", () => {
+    console.log("다시 설정 클릭");
+
     formData.goal = "";
     formData.duration = "30";
     formData.stretching = false;
@@ -543,6 +674,8 @@ restartButton.addEventListener("click", () => {
 
     setSubmitStatus("", "");
 
+    finishButton.disabled = false;
+
     document.querySelector(
         'input[name="stretching-count"][value="10"]'
     ).checked = true;
@@ -564,6 +697,7 @@ restartButton.addEventListener("click", () => {
     finalCondition.textContent = "-";
 
     showStep(0);
+    console.log("현재 단계 0으로 이동");
     goalInput.focus();
 });
 
@@ -841,3 +975,10 @@ bmiContinue.addEventListener("click", () => {
 });
 
 updateGoalExperience();
+
+planDetailClose.addEventListener(
+    "click",
+    () => {
+        planDetailDialog.close();
+    }
+);
