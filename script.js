@@ -20,6 +20,7 @@ menuToggle.addEventListener("click", () => {
 });
 
 const navLinks = document.querySelectorAll(".main-nav a");
+const sections = document.querySelectorAll("main section");
 
 navLinks.forEach((link) => {
     link.addEventListener("click", () => {
@@ -33,6 +34,104 @@ navLinks.forEach((link) => {
         }
     });
 });
+
+function updateCurrentNav() {
+    let currentSection = "";
+    sections.forEach((section) => {
+
+        const top = section.offsetTop - 150;
+        const bottom = top + section.offsetHeight;
+
+        if (
+            window.scrollY + 150 >= top &&
+            window.scrollY + 150 < bottom
+        ) {
+            currentSection = section.id;
+        }
+    });
+
+    navLinks.forEach((link) => {
+        const target = link.getAttribute("href").replace("#", "");
+        const isCurrent = target === currentSection;
+
+        link.classList.toggle("is-current", isCurrent);
+
+        if (isCurrent) {
+            link.setAttribute(
+                "aria-current",
+                "page"
+            );
+        } else {
+            link.removeAttribute(
+                "aria-current"
+            );
+        }
+    });
+
+    navLinks.forEach((link) => {
+
+        const target =
+            link.getAttribute("href")
+                .replace("#", "");
+    
+        const isCurrent =
+            target === currentSection;
+    
+        link.classList.toggle(
+            "is-current",
+            isCurrent
+        );
+    
+        if (isCurrent) {
+    
+            link.setAttribute(
+                "aria-current",
+                "page"
+            );
+    
+        } else {
+    
+            link.removeAttribute(
+                "aria-current"
+            );
+    
+        }
+    
+    });
+    
+    /* 여기부터 추가 */
+    
+    const reachedBottom =
+        window.innerHeight + window.scrollY
+        >= document.documentElement.scrollHeight - 10;
+    
+    if (reachedBottom) {
+    
+        navLinks.forEach((link) => {
+    
+            link.classList.remove("is-current");
+            link.removeAttribute("aria-current");
+    
+        });
+    
+        const subscribeLink =
+            document.querySelector(
+                '.main-nav a[href="#subscribe"]'
+            );
+    
+        subscribeLink.classList.add("is-current");
+    
+        subscribeLink.setAttribute(
+            "aria-current",
+            "page"
+        );
+    
+    }
+}
+
+window.addEventListener("scroll", updateCurrentNav);
+
+updateCurrentNav();
 
 const subscribeForm = document.querySelector("#subscribe-form");
 const emailInput = document.querySelector("#email");
@@ -183,6 +282,7 @@ const optionNext = document.querySelector("#option-next");
 const summaryPrev = document.querySelector("#summary-prev");
 const finishButton = document.querySelector("#finish-button");
 const restartButton = document.querySelector("#restart-button");
+const addPlanButton = document.querySelector("#add-plan-button");
 const summaryGoal = document.querySelector("#summary-goal");
 const summaryDuration = document.querySelector("#summary-duration");
 const summaryStretching = document.querySelector("#summary-stretching");
@@ -194,6 +294,7 @@ const finalCondition = document.querySelector("#final-condition");
 const bmiRank1 = document.querySelector("#bmi-rank-1");
 const bmiRank2 = document.querySelector("#bmi-rank-2");
 const bmiRank3 = document.querySelector("#bmi-rank-3");
+const filterButtons = document.querySelectorAll(".filter-button");
 // 최종 운동 계획 요약 카드 요소
 const finalBmi = document.querySelector("#final-bmi");
 const finalTheme = document.querySelector("#final-theme");
@@ -207,7 +308,9 @@ const planDetailDialog = document.querySelector("#plan-detail-dialog");
 const planDetailContent = document.querySelector("#plan-detail-content");
 const planDetailClose = document.querySelector("#plan-detail-close");
 
-const savedPlans = [];
+const savedPlans =JSON.parse(localStorage.getItem("savedPlans")) || [];
+
+let currentFilter = "all";
 
 const formData = {
     goal:"",
@@ -223,17 +326,42 @@ function renderPlans() {
 
     planList.innerHTML = "";
 
-    savedPlans.forEach((plan) => {
+    const filteredPlans =
+        savedPlans.filter((plan) => {
 
-        const item =
-            document.createElement("div");
+            if (currentFilter === "all") {
+                return true;
+            }
 
-        item.className =
-            "final-plan-item";
+            if (currentFilter === "active") {
+                return plan.status === "active";
+            }
+
+            if (currentFilter === "cancelled") {
+                return plan.status === "cancelled";
+            }
+
+            return true;
+        });
+
+        filteredPlans.forEach((plan) => {
+            const item = document.createElement("div");
+
+        item.className = "final-plan-item";
 
             item.innerHTML = `
 
-            <span class="plan-status">저장됨</span>
+            <span class="
+                plan-status
+                ${plan.status === "cancelled"
+                    ? "is-cancelled"
+                    : "is-active"}
+            ">
+            ${plan.status === "cancelled"
+                    ? "취소됨"
+                    : "저장됨"
+            }
+            </span>
         
             <div class="plan-card-header">
                 <h3>${plan.goal}</h3>
@@ -248,15 +376,23 @@ function renderPlans() {
                 <span class="plan-theme-badge theme-${plan.theme.toLowerCase()}">
                 ${plan.theme}
                 </span>
-                
-                <button
-                    type="button"
-                    class="detail-button">
-                    상세보기
-                </button>
-            
             </div>
-        
+                
+            <div class="plan-actions">
+                <button type="button" class="detail-button">상세보기</button>
+                ${
+                    plan.status === "active"
+                    ?
+                    `<button type="button" class="cancel-button">
+                        취소
+                    </button>`
+                    :
+                    `<button type="button" class="restore-button">
+                        복구
+                    </button>`
+                }
+            </div>
+
         `;
 
         const detailButton = item.querySelector(".detail-button");
@@ -318,21 +454,74 @@ function renderPlans() {
                 </div>
             
             `;
-
                 planDetailDialog.showModal();
             }
         );
+
+        const cancelButton = item.querySelector(".cancel-button");
+        const restoreButton = item.querySelector(".restore-button");
+
+        if (restoreButton) {
+            restoreButton.addEventListener(
+                "click",
+                () => {
+                    plan.status = "active";
+                    localStorage.setItem("savedPlans",JSON.stringify(savedPlans));
+                    
+                    renderPlans();
+                }
+            );
+        }
+
+        if (cancelButton) {
+            cancelButton.addEventListener(
+                "click",
+                () => {
+                    plan.status = "cancelled";
+                    localStorage.setItem("savedPlans", JSON.stringify(savedPlans));
+
+                    renderPlans();
+                }
+            );
+        }
 
         planList.append(item);
 
     });
 
-    planCount.textContent =
-        `저장된 계획 ${savedPlans.length}개`;
+    planCount.textContent = `표시된 계획 ${filteredPlans.length}개`;
+    planEmpty.hidden = filteredPlans.length > 0;
 
-    planEmpty.hidden =
-        savedPlans.length > 0;
+    if (currentFilter === "active") {
+        planEmpty.textContent =
+            "저장된 운동 계획이 없습니다.";
+    }
+    else if (currentFilter === "cancelled") {
+        planEmpty.textContent =
+            "취소된 운동 계획이 없습니다.";
+    }
+    else {
+        planEmpty.textContent =
+            "아직 저장한 운동 계획이 없습니다.";
+    }
 }
+
+filterButtons.forEach((button) => {
+    button.addEventListener(
+        "click",
+        () => {
+            currentFilter = button.dataset.filter;
+            filterButtons.forEach((item) => {
+                item.classList.remove("is-active");
+                item.setAttribute("aria-pressed", "false");
+            });
+            button.classList.add("is-active");
+            button.setAttribute("aria-pressed", "true");
+
+            renderPlans();
+        }
+    );
+});
 
 function showStep(index) {
     // 해당 단계만 표시
@@ -621,8 +810,12 @@ finishButton.addEventListener("click",
             theme: formData.theme,
             duration: formData.duration,
             stretching: formData.stretching,
-            stretchingCount: formData.stretchingCount
+            stretchingCount: formData.stretchingCount,
+        
+            status: "active"
         });
+
+        localStorage.setItem("savedPlans", JSON.stringify(savedPlans));
 
         console.log("현재 저장 개수:", savedPlans.length);
         console.log(savedPlans);
@@ -639,67 +832,81 @@ finishButton.addEventListener("click",
 
 );
 
-restartButton.addEventListener("click", () => {
-    console.log("다시 설정 클릭");
+restartButton.addEventListener(
+    "click", () => {
+        console.log("방금 저장한 계획 수정");
 
-    formData.goal = "";
-    formData.duration = "30";
-    formData.stretching = false;
-    formData.stretchingCount = "10";
-    formData.day = "";
-    formData.condition = "";
-    formData.theme = "";
+        if (savedPlans.length > 0) {
+            savedPlans.pop();
+            localStorage.setItem("savedPlans", JSON.stringify(savedPlans));
+        }
+        renderPlans();
+        finishButton.disabled = false;
+        planFlow.hidden = false;
+        showStep(4);
+    }
+);
 
-    conditionValue.textContent = "5점";
-    recommendedTheme.textContent = "-";
-    conditionError.textContent = "";
-    dayError.textContent = "";
-
-    goalInput.value = "";
-    goalError.textContent = "";
-    goalInput.classList.remove("has-error");
-
-    durationRange.value = "30";
-    durationValue.value = "30분";
-
-    stretchingOption.checked = false;
-    syncStretchingOptions();    
-
-    durationError.textContent = "";
-
-    goalCount.textContent = "0 / 30자";
-    goalHelp.textContent = "운동 목표를 2자 이상 입력해 주세요.";
-    goalHelp.classList.remove("is-valid");
-    goalInput.classList.remove("is-valid");
-
-    setSubmitStatus("", "");
-
-    finishButton.disabled = false;
-
-    document.querySelector(
-        'input[name="stretching-count"][value="10"]'
-    ).checked = true;
-
-    summaryGoal.textContent = "";
-    summaryDuration.textContent = "";
-    summaryStretching.textContent = "";
-    summaryDay.textContent = "";
-    summaryCondition.textContent = "";
-    summaryTheme.textContent = "";
+addPlanButton.addEventListener(
+    "click", () => {
+        formData.goal = "";
+        formData.duration = "30";
+        formData.stretching = false;
+        formData.stretchingCount = "10";
+        formData.day = "";
+        formData.condition = "";
+        formData.theme = "";
     
-    // 최종 요약 카드 초기화
-    finalBmi.textContent = "-";
-    finalTheme.textContent = "-";
-    finalGoal.textContent = "-";
-    finalDuration.textContent = "-";
-    finalStretching.textContent = "-";
-    finalDay.textContent = "-";
-    finalCondition.textContent = "-";
-
-    showStep(0);
-    console.log("현재 단계 0으로 이동");
-    goalInput.focus();
-});
+        conditionValue.textContent = "5점";
+        recommendedTheme.textContent = "-";
+        conditionError.textContent = "";
+        dayError.textContent = "";
+    
+        goalInput.value = "";
+        goalError.textContent = "";
+        goalInput.classList.remove("has-error");
+    
+        durationRange.value = "30";
+        durationValue.value = "30분";
+    
+        stretchingOption.checked = false;
+        syncStretchingOptions();    
+    
+        durationError.textContent = "";
+    
+        goalCount.textContent = "0 / 30자";
+        goalHelp.textContent = "운동 목표를 2자 이상 입력해 주세요.";
+        goalHelp.classList.remove("is-valid");
+        goalInput.classList.remove("is-valid");
+    
+        setSubmitStatus("", "");
+    
+        finishButton.disabled = false;
+    
+        document.querySelector(
+            'input[name="stretching-count"][value="10"]'
+        ).checked = true;
+    
+        summaryGoal.textContent = "";
+        summaryDuration.textContent = "";
+        summaryStretching.textContent = "";
+        summaryDay.textContent = "";
+        summaryCondition.textContent = "";
+        summaryTheme.textContent = "";
+        
+        // 최종 요약 카드 초기화
+        finalBmi.textContent = "-";
+        finalTheme.textContent = "-";
+        finalGoal.textContent = "-";
+        finalDuration.textContent = "-";
+        finalStretching.textContent = "-";
+        finalDay.textContent = "-";
+        finalCondition.textContent = "-";
+    
+        showStep(0);
+        console.log("현재 단계 0으로 이동");
+        goalInput.focus();
+    });
 
 
 /* =========================================
@@ -975,6 +1182,8 @@ bmiContinue.addEventListener("click", () => {
 });
 
 updateGoalExperience();
+
+renderPlans();
 
 planDetailClose.addEventListener(
     "click",

@@ -47,7 +47,19 @@ header {
 }
 
 section {
-    margin-top: 56px;
+    padding-top: 20px;
+}
+
+section + section {
+    margin-top: 96px;
+}
+
+section h2 {
+    margin-bottom: 32px;
+}
+
+#steps ol li {
+    margin-bottom: 12px;
 }
 
 footer {
@@ -483,11 +495,10 @@ body.dark #information-dialog {background: #50515f; color: #fff;}
 }
 
 .detail-button {
-    width: auto;
+    flex: 1;
     margin-top: 0;
-    border-radius: 14px;
-    padding: 10px 20px;
-    min-height: 44px;
+    width: auto;
+    min-height: 56px;
 }
 
 .plan-flow {
@@ -530,6 +541,46 @@ body.dark #information-dialog {background: #50515f; color: #fff;}
     display: flex;
     gap: 12px;
     margin-top: 20px;
+}
+
+.plan-status.is-active {
+    background: #ECE5F8;
+    color: var(--primary);
+}
+
+.plan-status.is-cancelled {
+    background: #E5E7EB;
+    color: #6B7280;
+}
+
+.plan-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.cancel-button {
+    flex: 0 0 auto;
+    width: 110px;
+    min-height: 56px;
+    background: #FEE2E2;
+    color: #B91C1C;
+}
+
+.cancel-button:hover {
+    background: #FECACA;
+}
+
+.restore-button {
+    flex: 0 0 auto;
+    width: 110px;
+    min-height: 56px;
+    background: #DCFCE7;
+    color: #166534;
+}
+
+.restore-button:hover {
+    background: #BBF7D0;
 }
 
 /* 운동 계획 완료 상태 */
@@ -1131,9 +1182,21 @@ body.dark .bmi-section .error-message {
     margin-top: 20px;
 }
 
-.detail-button {
-    margin-top: 16px;
-    width: 100%;
+.detail-button,
+.cancel-button,
+.restore-button {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cancel-button,
+.restore-button {
+
+    width: 110px;
+
+    padding: 0;
 }
 
 /* main section {
@@ -1177,7 +1240,7 @@ body.dark .bmi-section .error-message {
     }
 
     section {
-        margin-top: 40px;
+        padding-top: 0;
     }
 
     h1 {
@@ -1214,13 +1277,37 @@ body.dark .bmi-section .error-message {
     }
 
     input:not([type="checkbox"]):not([type="radio"]),
-    button {
+    form button {
         width: 100%;
     }
 
     button {
         /*모바일에서도 버튼의 누르는 영역이 너무 낮아지지 않게 설정*/
         min-height: 48px;
+    }
+
+    section + section {
+        margin-top: 72px;
+    }
+
+    .sidebar {
+        padding: 12px 16px;
+    }
+
+    .sidebar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0;
+    }
+
+
+    .logo-link {
+        margin-bottom: 0;
+    }
+
+    .content-area {
+        padding: 16px;
     }
 
     .tabs {
@@ -1296,8 +1383,10 @@ body.dark .bmi-section .error-message {
 
     .menu-toggle {
         display: block;
-        width: auto;
-        min-height: auto;
+        width: 48px !important;
+        height: 48px;
+        padding: 0;
+        background: transparent;
     }
 
     .plan-list {
