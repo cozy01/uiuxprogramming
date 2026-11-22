@@ -67,39 +67,6 @@ function updateCurrentNav() {
             );
         }
     });
-
-    navLinks.forEach((link) => {
-
-        const target =
-            link.getAttribute("href")
-                .replace("#", "");
-    
-        const isCurrent =
-            target === currentSection;
-    
-        link.classList.toggle(
-            "is-current",
-            isCurrent
-        );
-    
-        if (isCurrent) {
-    
-            link.setAttribute(
-                "aria-current",
-                "page"
-            );
-    
-        } else {
-    
-            link.removeAttribute(
-                "aria-current"
-            );
-    
-        }
-    
-    });
-    
-    /* 여기부터 추가 */
     
     const reachedBottom =
         window.innerHeight + window.scrollY
@@ -478,6 +445,10 @@ function renderPlans() {
             cancelButton.addEventListener(
                 "click",
                 () => {
+                    if (!confirm("운동 계획을 취소하시겠습니까?")
+                    ) {
+                        return;
+                    }
                     plan.status = "cancelled";
                     localStorage.setItem("savedPlans", JSON.stringify(savedPlans));
 

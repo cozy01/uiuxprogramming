@@ -102,6 +102,23 @@ p {
     line-height: 1.7;
 }
 
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    padding: 12px;
+    background: white;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    border-radius: 8px;
+}
+
+.skip-link:focus {
+    left: 16px;
+    top: 16px;
+    z-index: 1000;
+}
+
 .features-list {
     list-style-type: none;
     padding-left: 0;
@@ -139,7 +156,7 @@ p {
     border-radius: 12px;
 }
 
-form {
+#subscribe-form {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -310,6 +327,12 @@ button:active {
 .filter-button.is-active {
     background: var(--primary);
     color: white;
+}
+
+.filter-button[aria-pressed="true"] {
+    font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 6px;
 }
 
 .sidebar-header {
@@ -644,6 +667,11 @@ body.dark .main-nav a.is-current {
     background: #ECE5F8;
     border-left: 4px solid var(--primary);
     color: var(--primary);
+}
+
+body.dark .main-nav a[aria-current="page"] {
+    text-decoration: underline;
+    text-underline-offset: 6px;
 }
 
 body.dark .tab {
@@ -1175,6 +1203,11 @@ body.dark .bmi-section .error-message {
     font-weight: 700;
 }
 
+.main-nav a[aria-current="page"] {
+    text-decoration: underline;
+    text-underline-offset: 6px;
+}
+
 .plan-list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1271,13 +1304,13 @@ body.dark .bmi-section .error-message {
     }
 
     /*이메일 입력창과 버튼도 한 열로 배치*/
-    form {
+    #subscribe-form {
         flex-direction: column;
         align-items: stretch;
     }
 
     input:not([type="checkbox"]):not([type="radio"]),
-    form button {
+    #subscribe-form button {
         width: 100%;
     }
 
