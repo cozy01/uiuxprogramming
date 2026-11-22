@@ -281,6 +281,7 @@ const optionPrev = document.querySelector("#option-prev");
 const optionNext = document.querySelector("#option-next");
 const summaryPrev = document.querySelector("#summary-prev");
 const finishButton = document.querySelector("#finish-button");
+const planSubmitForm = document.querySelector("#plan-submit-form");
 const restartButton = document.querySelector("#restart-button");
 const addPlanButton = document.querySelector("#add-plan-button");
 const summaryGoal = document.querySelector("#summary-goal");
@@ -776,61 +777,55 @@ optionNext.addEventListener("click", () => {
 summaryPrev.addEventListener("click", () => showStep(3));
 
 
-const forceSaveFailure =
-    new URLSearchParams(location.search).has("save-error");
-
-finishButton.addEventListener("click",
-    async () => {finishButton.disabled = true;
-        setSubmitStatus("운동 계획을 저장하고 있습니다.", "");
-
-        await new Promise((resolve) => setTimeout(resolve, 800));
-
-        if (forceSaveFailure) {finishButton.disabled = false;
-            setSubmitStatus(
-                "운동 계획 저장에 실패했습니다. 다시 시도해 주세요.",
-                "is-error"
-            );
-            return;
+const forceSaveFailure = new URLSearchParams(location.search).has("save-error");
+    planSubmitForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            finishButton.disabled = true;
+            setSubmitStatus("운동 계획을 저장하고 있습니다.", "");
+    
+            await new Promise((resolve) => setTimeout(resolve, 800));
+    
+            if (forceSaveFailure) {
+                finishButton.disabled = false;
+                setSubmitStatus(
+                    "운동 계획 저장에 실패했습니다. 다시 시도해 주세요.",
+                    "is-error"
+                );
+                return;
+            }
+    
+            finalBmi.textContent = bmiNumber.textContent || "-";
+            finalTheme.textContent = bmiRecommendation.textContent || "-";
+            finalGoal.textContent = formData.goal;
+            finalDuration.textContent = formData.duration + "분";
+            finalStretching.textContent = formData.stretching
+                ? formData.stretchingCount + "분 포함"
+                : "미포함";
+            finalDay.textContent = formData.day;
+            finalCondition.textContent = formData.condition + "점";
+    
+            savedPlans.push({
+                bmi: bmiNumber.textContent,
+                recommendedTheme: bmiRecommendation.textContent,
+                goal: formData.goal,
+                day: formData.day,
+                condition: formData.condition,
+                theme: formData.theme,
+                duration: formData.duration,
+                stretching: formData.stretching,
+                stretchingCount: formData.stretchingCount,
+                status: "active"
+            });
+    
+            localStorage.setItem("savedPlans", JSON.stringify(savedPlans));
+    
+            renderPlans();
+    
+            setSubmitStatus("운동 계획을 저장했습니다.", "is-success");
+    
+            showStep(5);
         }
-
-        finalBmi.textContent = bmiNumber.textContent || "-";
-        finalTheme.textContent = bmiRecommendation.textContent || "-";
-        finalGoal.textContent = formData.goal;
-        finalDuration.textContent = formData.duration + "분";
-        finalStretching.textContent = formData.stretching ? formData.stretchingCount + "분 포함" : "미포함";
-        finalDay.textContent = formData.day;
-        finalCondition.textContent = formData.condition + "점";
-
-        savedPlans.push({
-            bmi: bmiNumber.textContent,
-            recommendedTheme: bmiRecommendation.textContent,
-            goal: formData.goal,
-            day: formData.day,
-            condition: formData.condition,
-            theme: formData.theme,
-            duration: formData.duration,
-            stretching: formData.stretching,
-            stretchingCount: formData.stretchingCount,
-        
-            status: "active"
-        });
-
-        localStorage.setItem("savedPlans", JSON.stringify(savedPlans));
-
-        console.log("현재 저장 개수:", savedPlans.length);
-        console.log(savedPlans);
-        
-        renderPlans();
-
-        setSubmitStatus(
-            "운동 계획을 저장했습니다.",
-            "is-success"
-        );
-        
-        showStep(5);
-    }
-
-);
+    );
 
 restartButton.addEventListener(
     "click", () => {
@@ -914,6 +909,7 @@ addPlanButton.addEventListener(
 ========================================= */
 
 // BMI 화면 요소
+const bmiForm = document.querySelector("#bmi-form");
 const bmiSection = document.querySelector("#bmi-section");
 const bmiHeight = document.querySelector("#bmi-height");
 const bmiWeight = document.querySelector("#bmi-weight");
@@ -1088,59 +1084,49 @@ function validateBmiInputs() {
 }
 
 // BMI 계산 버튼 클릭
-bmiCalculate.addEventListener("click", () => {
-    // 이전 결과는 숨긴 후 새로 계산
-    clearBmiResult();
+bmiForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        clearBmiResult();
 
-    const values = validateBmiInputs();
+        const values = validateBmiInputs();
 
-    if (!values) return;
+        if (!values) return;
 
-    const heightInMeters = values.height / 100;
-    const bmi = values.weight / (heightInMeters * heightInMeters);
+        const heightInMeters = values.height / 100;
+        const bmi = values.weight / (heightInMeters * heightInMeters);
+        const recommendation = recommendBarreTheme(bmi);
 
-    const recommendation = recommendBarreTheme(bmi);
+        if (recommendation.theme === "CORE") {
+            bmiRank1.textContent = "CORE";
+            bmiRank2.textContent = "MOVE";
+            bmiRank3.textContent = "BALANCE";
+        }
+        else if (recommendation.theme === "MOVE") {
+            bmiRank1.textContent = "MOVE";
+            bmiRank2.textContent = "CORE";
+            bmiRank3.textContent = "CARDIO";
+        }
+        else if (recommendation.theme === "BALANCE") {
+            bmiRank1.textContent = "BALANCE";
+            bmiRank2.textContent = "SLOW";
+            bmiRank3.textContent = "MOVE";
+        }
+        else {
+            bmiRank1.textContent = recommendation.theme;
+            bmiRank2.textContent = "-";
+            bmiRank3.textContent = "-";
+        }
 
-    if (recommendation.theme === "CORE") {
+        bmiNumber.textContent = bmi.toFixed(1);
+        bmiRecommendation.textContent = recommendation.theme;
+        bmiReason.textContent = recommendation.reason;
+        bmiResult.hidden = false;
 
-        bmiRank1.textContent = "CORE";
-        bmiRank2.textContent = "MOVE";
-        bmiRank3.textContent = "BALANCE";
-    
+        showBarreTheme(recommendation.theme);
+
+        bmiResult.scrollIntoView({behavior: "smooth", block: "start"});
     }
-    else if (recommendation.theme === "MOVE") {
-    
-        bmiRank1.textContent = "MOVE";
-        bmiRank2.textContent = "CORE";
-        bmiRank3.textContent = "CARDIO";
-    
-    }
-    else if (recommendation.theme === "BALANCE") {
-    
-        bmiRank1.textContent = "BALANCE";
-        bmiRank2.textContent = "SLOW";
-        bmiRank3.textContent = "MOVE";
-    
-    }
-    else {
-    
-        bmiRank1.textContent = recommendation.theme;
-        bmiRank2.textContent = "-";
-        bmiRank3.textContent = "-";
-    
-    }
-
-    bmiNumber.textContent = bmi.toFixed(1);
-    bmiRecommendation.textContent = recommendation.theme;
-    bmiReason.textContent = recommendation.reason;
-
-    bmiResult.hidden = false;
-
-    // 추천 테마 설명을 자동으로 선택
-    showBarreTheme(recommendation.theme);
-
-    bmiResult.scrollIntoView({ behavior: "smooth", block: "start" });
-});
+);
 
 // 다른 BARRE 테마 설명 보기
 bmiThemeTabs.forEach((tab) => {
